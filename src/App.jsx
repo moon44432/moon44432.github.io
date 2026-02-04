@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { cvData } from './data/cvData';
 import Navigation from './components/Navigation';
 import Section from './components/Section';
@@ -25,6 +25,7 @@ function App() {
     const [theme, setTheme] = useState('light');
     const [lang, setLang] = useState('en');
     const [activeSection, setActiveSection] = useState('profile');
+    const scrollPreserveRef = useRef({ targetId: null, offset: 0, active: false });
 
     // Toggle theme
     useEffect(() => {
@@ -35,10 +36,34 @@ function App() {
         setTheme(prev => prev === 'light' ? 'dark' : 'light');
     };
 
-    // Toggle language
+    // Toggle language with scroll preservation
     const toggleLang = () => {
+        const element = document.getElementById(activeSection);
+        if (element) {
+            // Capture current distance from top of viewport
+            scrollPreserveRef.current = {
+                targetId: activeSection,
+                offset: element.getBoundingClientRect().top,
+                active: true
+            };
+        }
         setLang(prev => prev === 'en' ? 'ko' : 'en');
     };
+
+    // Restore scroll position after language change
+    useLayoutEffect(() => {
+        if (scrollPreserveRef.current.active) {
+            const { targetId, offset } = scrollPreserveRef.current;
+            const element = document.getElementById(targetId);
+            if (element) {
+                const newOffset = element.getBoundingClientRect().top;
+                const diff = newOffset - offset;
+                // Adjust scroll by the difference
+                window.scrollBy({ top: diff, behavior: 'instant' });
+            }
+            scrollPreserveRef.current.active = false;
+        }
+    }, [lang]);
 
     // Helper for internationalization
     const t = (obj) => {
@@ -115,7 +140,7 @@ function App() {
                                     <Linkedin size={14} /> LinkedIn
                                 </a>
                                 <a href={cvData.profile.scholar} target="_blank" rel="noopener noreferrer" className="badge glass">
-                                    <ScholarIcon size={14} /> Scholar
+                                    <ScholarIcon size={14} /> Google Scholar
                                 </a>
                                 <a href={cvData.profile.cv} target="_blank" rel="noopener noreferrer" className="badge glass">
                                     <FileText size={14} /> CV

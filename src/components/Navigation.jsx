@@ -12,6 +12,17 @@ const Navigation = ({ theme, toggleTheme, lang, toggleLang, activeSection }) => 
         { id: 'skills', label: { en: 'Skills', ko: '기술 스택' }, icon: <Code size={20} /> },
     ];
 
+    const navListRef = React.useRef(null);
+
+    React.useEffect(() => {
+        if (navListRef.current) {
+            const activeItem = navListRef.current.querySelector('.active');
+            if (activeItem) {
+                activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+    }, [activeSection]);
+
     const scrollToSection = (id) => {
         const element = document.getElementById(id);
         if (element) {
@@ -22,7 +33,7 @@ const Navigation = ({ theme, toggleTheme, lang, toggleLang, activeSection }) => 
     return (
         <>
             <nav className="nav-container glass">
-                <ul className="nav-list">
+                <ul className="nav-list" ref={navListRef}>
                     {navItems.map((item) => (
                         <li key={item.id} className="nav-item">
                             <button

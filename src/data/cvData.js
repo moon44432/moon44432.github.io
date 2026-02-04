@@ -232,7 +232,7 @@ export const cvData = {
         },
         {
             title: {
-                en: "CBNU Innovative Startup League",
+                en: "Chungbuk National University Innovative Startup League",
                 ko: "충북대학교 혁신창업 리그"
             },
             result: {
